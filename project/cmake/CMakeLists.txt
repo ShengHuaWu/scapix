@@ -52,15 +52,25 @@ set(bridges
 #   "swift"
 )
 
-foreach(bridge ${bridges})
-    if(NOT ${SCAPIX_BRIDGE} STREQUAL ${bridge})
-        file(GLOB_RECURSE bridge_sources CONFIGURE_DEPENDS
-            ${SCAPIX_ROOT}/source/scapix/link/${bridge}/*.*
-            ${SCAPIX_ROOT}/source/scapix/bridge/${bridge}/*.*
-        )
-        set_source_files_properties(${bridge_sources} PROPERTIES HEADER_FILE_ONLY TRUE)
-    endif()
-endforeach()
+# If SCAPIX_BRIDGE is equal to cpp, we only set java & python bridge sources to HEADER_FILE_ONLY
+if(${SCAPIX_BRIDGE} STREQUAL cpp)
+    file(GLOB_RECURSE bridge_sources CONFIGURE_DEPENDS
+            ${SCAPIX_ROOT}/source/scapix/link/java/*.*
+            ${SCAPIX_ROOT}/source/scapix/bridge/java/*.*
+            ${SCAPIX_ROOT}/source/scapix/link/python/*.*
+            ${SCAPIX_ROOT}/source/scapix/bridge/python/*.*)
+    set_source_files_properties(${bridge_sources} PROPERTIES HEADER_FILE_ONLY TRUE)
+else()
+    foreach(bridge ${bridges})
+        if(NOT ${SCAPIX_BRIDGE} STREQUAL ${bridge})
+            file(GLOB_RECURSE bridge_sources CONFIGURE_DEPENDS
+                    ${SCAPIX_ROOT}/source/scapix/link/${bridge}/*.*
+                    ${SCAPIX_ROOT}/source/scapix/bridge/${bridge}/*.*
+                    )
+            set_source_files_properties(${bridge_sources} PROPERTIES HEADER_FILE_ONLY TRUE)
+        endif()
+    endforeach()
+endif()
 
 if(${SCAPIX_BRIDGE} STREQUAL objc)
     target_compile_options(scapix PUBLIC "-fobjc-arc")

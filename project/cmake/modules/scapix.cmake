@@ -206,7 +206,10 @@ string(CONCAT generated_sources_var_name "generated_sources_" ${SCAPIX_BRIDGE})
 set_source_files_properties(${generated_sources} PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties(${${generated_sources_var_name}} PROPERTIES HEADER_FILE_ONLY FALSE)
 
-target_sources(${target} PUBLIC ${generated_sources})
+# If SCAPIX_BRIDGE is equal to cpp, NOT add target_sources
+if(NOT ${SCAPIX_BRIDGE} STREQUAL cpp)
+    target_sources(${target} PUBLIC ${generated_sources})
+endif()
 source_group(TREE ${PROJECT_ROOT}/generated PREFIX "generated" FILES ${generated_sources})
 
 endfunction(scapix_bridge_headers)
